@@ -1,11 +1,12 @@
 import { Component, OnInit,Input } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { NzModalRef,NzModalService } from 'ng-zorro-antd/modal';
 import { Observable, Observer } from 'rxjs';
-import { MyValidationErrors, MyValidators } from './type';
+import {  MyValidationErrors, MyValidators } from './type';
 import { SharedService } from 'src/app/shared.service';
 import { studentList } from '../student';
 import { Result } from 'src/app/result';
+import { ValidateStudentExist } from 'src/app/validators/asyncStudentId.validator';
 @Component({
   selector: 'app-addstudent',
   templateUrl: './addstudent.component.html',
@@ -16,59 +17,56 @@ export class AddstudentComponent implements OnInit {
   @Input()method:string;
   isDisable:boolean=true;
   validateForm: FormGroup;
-  add:boolean;
-  update:boolean;
+  add:boolean=false;
+  update:boolean=false;
   public showLoading = false;
   gender='F';
   studentType='M';
-
+  valid:boolean;
   addsubmit(value: { studentId: string;studentName:string;gender:string;schoolYear:Date;telephone:string; email: string; studentType: string; idNo: string;}) {
     this.showLoading = true;
     this.a=0;
+
     for (const key in this.validateForm.controls) {
       
       if (this.validateForm.controls.hasOwnProperty(key)) {
         this.validateForm.controls[key].markAsDirty();
         this.validateForm.controls[key].updateValueAndValidity();
       }
-      
     }
-    
-    if (this.validateForm.valid){
     setTimeout(()=>{
+      console.log(this.validateForm.valid)
+      if (this.validateForm.valid){
       this.showLoading = false;
       this.sharedService.addStudent(value).subscribe(res=>{
         alert(res.message.toString());
       });
       this.modalRef.destroy('suc');
-    },1000)}
-    else {
+    }else {
       this.showLoading = false;
-    }
+    }},1000)
+    
   }
   updatesubmit(value: { studentId: string;studentName:string;gender:string;schoolYear:Date;telephone:string; email: string; studentType: string; idNo: string;}) {
     this.showLoading = true;
     this.a=0;
     for (const key in this.validateForm.controls) {
-      
       if (this.validateForm.controls.hasOwnProperty(key)) {
         this.validateForm.controls[key].markAsDirty();
         this.validateForm.controls[key].updateValueAndValidity();
-      }
-      
+      } 
     }
-    
-    if (this.validateForm.valid){
     setTimeout(()=>{
+    if (this.validateForm.valid){
       this.showLoading = false;
       this.sharedService.updateStudent(value).subscribe(res=>{
         alert(res.message.toString());
       });
       this.modalRef.destroy('suc');
-    },1000)}
+    }
     else {
       this.showLoading = false;
-    }
+    }},1000)
     
   }
   
@@ -84,35 +82,17 @@ export class AddstudentComponent implements OnInit {
     }
   };
   a:number=0;
-  // submitForm(value: { studentId: string;studentName:string;gender:string;schoolYear:Date;telephone:string; email: string; studentType: string; idNo: string;}): void {
-    
-  //   for (const key in this.validateForm.controls) {
-  //     this.a=0;
-  //     if (this.validateForm.controls.hasOwnProperty(key)) {
-  //       this.validateForm.controls[key].markAsDirty();
-  //       this.validateForm.controls[key].updateValueAndValidity();
-  //       this.a=this.a+1;
-  //     }
-  //   }
-  //   if (this.a==0){
-  //   this.sharedService.addStudent(value).subscribe(res=>{
-  //     alert(res.message.toString());
-  //   });}
-  // }
+
   close(){
     this.modalRef.destroy()
   }
-
-
-
   constructor(private modalRef: NzModalRef,
               private fb: FormBuilder,
               private sharedService:SharedService,
              ) {
-                 // use `MyValidators`
-    const { required, maxLength, minLength, email, mobile,idNo } = MyValidators;
+    const { required, maxLength, minLength, email, mobile,idNo} = MyValidators;
     this.validateForm = this.fb.group({
-      studentId: ['', [required, maxLength(12), minLength(12)]],
+      studentId: ['', [required, maxLength(12), minLength(12)],ValidateStudentExist.createValidator(this.sharedService,this.add)],
       studentName: ['', [required]],
       gender:['F',[required]],
       schoolYear:['2021-01-01',[required]],
@@ -122,12 +102,10 @@ export class AddstudentComponent implements OnInit {
       idNo:['',[required, maxLength(18), minLength(18),idNo]],
 
     });
-  }
-  
-
-
+  } 
   ngOnInit(): void {
     this.validateForm.setValue(this.dataItem)
+    
     console.log(this.method)
     if( this.method=="add"){
       this.add=true;
@@ -136,7 +114,12 @@ export class AddstudentComponent implements OnInit {
     else{
       this.add=false;
       this.update=true;
+      this.validateForm.controls['studentId'].clearAsyncValidators()
+      // this.validateForm.controls['studentId'].setValidators([MyValidators.required, MyValidators.maxLength(12), MyValidators.minLength(12)])
     }
+    
+    
+    
   }
-
+  
 }

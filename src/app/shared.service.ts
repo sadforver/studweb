@@ -2,8 +2,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { studentList } from './studinfo/student';
-import { Result } from './result';
+import { checkres, Result } from './result';
 import { catchError } from 'rxjs/operators';
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -49,5 +51,8 @@ readonly apiUrl="http://127.0.0.1:8000"
       .get<{result:Result<studentList[]>[]}>(`${this.apiUrl+/stud/}`, { params })
       .pipe(catchError(() => of({result: []})));
   }
+  checkStudId(studentId:any):Observable<checkres>{
+    return this.http
+      .get<checkres>(this.apiUrl+'/vali/',{params:{studentId:studentId,}})}
   }
 

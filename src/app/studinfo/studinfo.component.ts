@@ -121,15 +121,14 @@ export class StudinfoComponent implements OnInit {
       if(res){
         console.log('更新数据啦');
         console.log(res)
-        this.refreshStudents();
-      }
        
+      }       
     })
   }
   updateForm(dataItem: studentList): void {
     
     const modal = this.modal.create({
-      nzTitle: 'Add New Student',
+      nzTitle: 'Edit Student Information',
       nzContent:  AddstudentComponent,
       nzComponentParams: {
         dataItem:dataItem,
@@ -142,9 +141,9 @@ export class StudinfoComponent implements OnInit {
       console.log('afterClose-res: ', res);
       if(res){
         console.log('更新数据啦');
-        this.refreshStudents();
-      }
-     
+       
+      } 
+      // this.refreshStudents();
     })
   }
   refreshStudents(){
