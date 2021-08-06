@@ -50,10 +50,11 @@ export class StudinfoComponent implements OnInit {
     pageSize: number,
     sortField: string | null,
     sortOrder: string | null,
+    searchTerm:string | null,
     filter: Array<{ key: string; value: string[] }>
   ): void {
     this.loading = true;
-    this.sharedService.getStudents(pageIndex, pageSize, sortField, sortOrder, filter).subscribe(res => {
+    this.sharedService.getStudents(pageIndex, pageSize, sortField, sortOrder,searchTerm, filter).subscribe(res => {
       this.loading = false;
       this.total =res['count'];
       this.students = res['data'];
@@ -66,24 +67,17 @@ export class StudinfoComponent implements OnInit {
     const currentSort = sort.find(item => item.value !== null);
     const sortField = (currentSort && currentSort.key) || null;
     const sortOrder = (currentSort && currentSort.value) || null;
-    this.loadDataFromServer(pageIndex, pageSize, sortField, sortOrder, filter);
+    this.loadDataFromServer(pageIndex, pageSize, sortField, sortOrder,this.searchTerm, filter);
   }
 
   ngOnInit(): void {
   //  this.refreshStudents()
-   this.loadDataFromServer(this.pageIndex, this.pageSize, null, null, []);
+   this.loadDataFromServer(this.pageIndex, this.pageSize, null, null,null, []);
   }
-  searchStudent() {
-    this.students = this.oriStudents.filter((stud: studentList) => {
-      console.log(this.searchTerm)
-      if (stud.studentId.indexOf(this.searchTerm) >= 0) {
-        return true;
-      } else if (stud.studentName.indexOf(this.searchTerm) >= 0) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+  onSend(searchTerm: string){
+    this.searchTerm=searchTerm
+    console.log(searchTerm)
+    this.loadDataFromServer(this.pageIndex, this.pageSize, null, null,this.searchTerm, []);
   }
 
   deleteStud(dataItem:studentList){

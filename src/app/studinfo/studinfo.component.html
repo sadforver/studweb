@@ -1,4 +1,4 @@
-<input nz-input type="text" [(ngModel)]="searchTerm" (input)="searchStudent()" placeholder="输入学号或姓名关键字" />
+<app-fuzzy-search (onSend)="onSend($event)"></app-fuzzy-search>
 <button nz-button nzType="primary" (click)="creatForm()">新增</button>
 <nz-table 
     [nzData]="students" 

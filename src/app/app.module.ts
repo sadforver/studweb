@@ -29,6 +29,7 @@ import { AddstudentComponent } from './studinfo/addstudent/addstudent.component'
 
 import { GenderPipe } from './studinfo/gender.pipe';
 import { ScholarPipe } from './studinfo/scholar.pipe';
+import { FuzzySearchComponent } from './child/fuzzy-search/fuzzy-search.component';
 
 
 registerLocaleData(zh);
@@ -45,6 +46,7 @@ registerLocaleData(zh);
     AddstudentComponent,
     GenderPipe,
     ScholarPipe,
+    FuzzySearchComponent,
   ],
   imports: [
     BrowserModule,

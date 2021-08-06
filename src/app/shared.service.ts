@@ -34,13 +34,15 @@ readonly apiUrl="http://127.0.0.1:8000"
     pageSize: number,
     sortField: string | null,
     sortOrder: string | null,
+    searchTerm:string | null,
     filters: Array<{ key: string; value: string[] }>
   ): Observable<{result:Result<studentList>[]}> {
     let params = new HttpParams()
       .append('page', `${pageIndex}`)
       .append('results', `${pageSize}`)
       .append('sortField', `${sortField}`)
-      .append('sortOrder', `${sortOrder}`);
+      .append('sortOrder', `${sortOrder}`)
+      .append('searchTerm',`${searchTerm}`);
     filters.forEach(filter => {
       if(filter.value){
       filter.value.forEach(value => {
