@@ -28,7 +28,6 @@ export class AddstudentComponent implements OnInit {
     this.a=0;
 
     for (const key in this.validateForm.controls) {
-      
       if (this.validateForm.controls.hasOwnProperty(key)) {
         this.validateForm.controls[key].markAsDirty();
         this.validateForm.controls[key].updateValueAndValidity();

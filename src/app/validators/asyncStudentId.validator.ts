@@ -31,7 +31,7 @@ export class ValidateStudentExist {
             } 
           }
         )
-        },1000);});
+        },300);});
       }
      
       

@@ -30,14 +30,9 @@ export class StudinfoComponent implements OnInit {
     { text: '博士', value: 'D' },
     { text: '硕士', value: 'M' },
   ];
-
   idSortOrder = null;
-  idSortFn = (a: studentList, b: studentList) => a.studentId.localeCompare(b.studentId);
   idSortDirections = ['ascend', 'descend', null];
-
   yearSortOrder = null;
-  yearSortFn = (a: studentList, b: studentList) =>
-    String(a.schoolYear).localeCompare(String(b.schoolYear));
   yearSortDirections = ['ascend', 'descend', null];
 
 
@@ -67,15 +62,18 @@ export class StudinfoComponent implements OnInit {
     const currentSort = sort.find(item => item.value !== null);
     const sortField = (currentSort && currentSort.key) || null;
     const sortOrder = (currentSort && currentSort.value) || null;
-    this.loadDataFromServer(pageIndex, pageSize, sortField, sortOrder,this.searchTerm, filter);
+    const searchTerm=this.searchTerm ||null;
+    this.pageIndex=pageIndex;
+    this.pageSize=pageSize;
+    this.loadDataFromServer(pageIndex, pageSize, sortField, sortOrder,searchTerm, filter);
   }
 
   ngOnInit(): void {
-  //  this.refreshStudents()
    this.loadDataFromServer(this.pageIndex, this.pageSize, null, null,null, []);
   }
   onSend(searchTerm: string){
-    this.searchTerm=searchTerm
+    this.searchTerm=searchTerm;
+    this.pageIndex=1;
     console.log(searchTerm)
     this.loadDataFromServer(this.pageIndex, this.pageSize, null, null,this.searchTerm, []);
   }
@@ -84,10 +82,9 @@ export class StudinfoComponent implements OnInit {
     this.sharedService.deleteStudent(dataItem.studentId).subscribe(res=>{
       alert(res['message'].toString())
       if (res['code']==1000){
-        this.refreshStudents();
+        this.loadDataFromServer(this.pageIndex, this.pageSize, null, null,this.searchTerm, []);
       }
     })
-    
   }
 
   creatForm(): void {  
@@ -105,7 +102,6 @@ export class StudinfoComponent implements OnInit {
         idNo:'',
         },
         method:'add',
-
       },
       nzClosable: false,
       nzFooter: null
@@ -115,12 +111,11 @@ export class StudinfoComponent implements OnInit {
       if(res){
         console.log('更新数据啦');
         console.log(res)
-       
+        this.loadDataFromServer(this.pageIndex, this.pageSize, null, null,this.searchTerm, []);
       }       
     })
   }
   updateForm(dataItem: studentList): void {
-    
     const modal = this.modal.create({
       nzTitle: 'Edit Student Information',
       nzContent:  AddstudentComponent,
@@ -135,15 +130,8 @@ export class StudinfoComponent implements OnInit {
       console.log('afterClose-res: ', res);
       if(res){
         console.log('更新数据啦');
-       
+        this.loadDataFromServer(this.pageIndex, this.pageSize, null, null,this.searchTerm, []);
       } 
-      // this.refreshStudents();
     })
-  }
-  refreshStudents(){
-    this.sharedService.getStudent().subscribe((result) => {
-      this.oriStudents = result.data;
-      this.students = result.data;
-    });
   }
 }
