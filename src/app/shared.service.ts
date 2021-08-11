@@ -35,7 +35,7 @@ readonly apiUrl="http://127.0.0.1:8000"
     sortField: string | null,
     sortOrder: string | null,
     searchTerm:string | null,
-    filters: Array<{ key: string; value: string[] }>
+    filters: Array<{ key: string; value: string }>
   ): Observable<{result:Result<studentList>[]}> {
     let params = new HttpParams()
       .append('page', `${pageIndex}`)
@@ -45,10 +45,10 @@ readonly apiUrl="http://127.0.0.1:8000"
       .append('searchTerm',`${searchTerm}`);
     filters.forEach(filter => {
       if(filter.value){
-      filter.value.forEach(value => {
-        params = params.append(filter.key, value);
-      });}
-    })
+      
+        params = params.append(filter.key, filter.value);
+      }}
+    )
     return this.http
       .get<{result:Result<studentList[]>[]}>(`${this.apiUrl+/stud/}`, { params })
       .pipe(catchError(() => of({result: []})));
@@ -56,5 +56,7 @@ readonly apiUrl="http://127.0.0.1:8000"
   checkStudId(studentId:any):Observable<checkres>{
     return this.http
       .get<checkres>(this.apiUrl+'/vali/',{params:{studentId:studentId,}})}
-  }
 
+
+  }
+  

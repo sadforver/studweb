@@ -91,7 +91,7 @@ export class AddstudentComponent implements OnInit {
              ) {
     const { required, maxLength, minLength, email, mobile,idNo} = MyValidators;
     this.validateForm = this.fb.group({
-      studentId: ['', [required, maxLength(12), minLength(12)],ValidateStudentExist.createValidator(this.sharedService,this.add)],
+      studentId: ['', [required, maxLength(12), minLength(12)],ValidateStudentExist.createValidator(this.sharedService)],
       studentName: ['', [required]],
       gender:['F',[required]],
       schoolYear:['2021-01-01',[required]],
@@ -114,7 +114,6 @@ export class AddstudentComponent implements OnInit {
       this.add=false;
       this.update=true;
       this.validateForm.controls['studentId'].clearAsyncValidators()
-      // this.validateForm.controls['studentId'].setValidators([MyValidators.required, MyValidators.maxLength(12), MyValidators.minLength(12)])
     }
     
     

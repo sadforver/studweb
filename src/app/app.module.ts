@@ -26,10 +26,11 @@ import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { TestpageComponent } from './testpage/testpage.component';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { AddstudentComponent } from './studinfo/addstudent/addstudent.component';
-
+import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { GenderPipe } from './studinfo/gender.pipe';
 import { ScholarPipe } from './studinfo/scholar.pipe';
 import { FuzzySearchComponent } from './child/fuzzy-search/fuzzy-search.component';
+import { NzMessageModule } from 'ng-zorro-antd/message';
 
 
 registerLocaleData(zh);
@@ -66,6 +67,8 @@ registerLocaleData(zh);
     NzFormModule,
     ReactiveFormsModule,
     NzInputModule,
+    NzUploadModule,
+    NzMessageModule,
 
     
   ],

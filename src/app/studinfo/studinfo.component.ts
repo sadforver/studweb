@@ -2,11 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
+import { NzUploadFile } from 'ng-zorro-antd/upload';
+import { Observable, Observer } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { SharedService } from '../shared.service';
 import { AddstudentComponent } from './addstudent/addstudent.component';
 import { studentList } from './student';
-
+import { NzMessageService } from 'ng-zorro-antd/message';
+// import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 
 @Component({
   selector: 'app-studinfo',
@@ -30,6 +33,10 @@ export class StudinfoComponent implements OnInit {
     { text: '博士', value: 'D' },
     { text: '硕士', value: 'M' },
   ];
+
+  ploading = false;
+  avatarUrl?: string;
+
   idSortOrder = null;
   idSortDirections = ['ascend', 'descend', null];
   yearSortOrder = null;
@@ -37,7 +44,9 @@ export class StudinfoComponent implements OnInit {
 
 
   constructor(private sharedService:SharedService,
-              private modal: NzModalService,) { }
+              private modal: NzModalService,
+              private msg: NzMessageService,
+                                            ) { }
   
 
   loadDataFromServer(
@@ -46,7 +55,7 @@ export class StudinfoComponent implements OnInit {
     sortField: string | null,
     sortOrder: string | null,
     searchTerm:string | null,
-    filter: Array<{ key: string; value: string[] }>
+    filter: Array<{ key: string; value: string }>
   ): void {
     this.loading = true;
     this.sharedService.getStudents(pageIndex, pageSize, sortField, sortOrder,searchTerm, filter).subscribe(res => {
@@ -133,5 +142,53 @@ export class StudinfoComponent implements OnInit {
         this.loadDataFromServer(this.pageIndex, this.pageSize, null, null,this.searchTerm, []);
       } 
     })
+  }
+
+  beforeUpload = (file: NzUploadFile, _fileList: NzUploadFile[],studentId:string) =>
+  new Observable((observer: Observer<boolean>) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      this.msg.error('You can only upload JPG file!');
+      observer.complete();
+      return;
+    }
+    const isLt2M = file.size! / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      this.msg.error('Image must smaller than 2MB!');
+      observer.complete();
+      return;
+    }
+    observer.next(isJpgOrPng && isLt2M);
+    observer.complete();
+  });
+  private getBase64(img: File, callback: (img: string) => void): void {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result!.toString()));
+    reader.readAsDataURL(img);
+  }
+  phoBelong=(dataItem:studentList)=>{
+    return{
+      studentId:dataItem.studentId
+    }
+
+  }
+  handleChange(info: { file: NzUploadFile}): void {
+    switch (info.file.status) {
+      case 'uploading':
+        this.loading = true;
+        break;
+      case 'done':
+        // Get this url from response in real world.
+        this.getBase64(info.file!.originFileObj!, (img: string) => {
+          this.loading = false;
+          this.avatarUrl = img;
+          console.log(img)
+        });
+        break;
+      case 'error':
+        this.msg.error('Network error');
+        this.loading = false;
+        break;
+    }
   }
 }
