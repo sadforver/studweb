@@ -3,12 +3,13 @@ import { Component, OnInit } from '@angular/core';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzUploadFile } from 'ng-zorro-antd/upload';
-import { Observable, Observer } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { Observable, Observer, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, flatMap, switchMap } from 'rxjs/operators';
 import { SharedService } from '../shared.service';
 import { AddstudentComponent } from './addstudent/addstudent.component';
 import { studentList } from './student';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { Result } from '../result';
 // import { NzUploadChangeParam } from 'ng-zorro-antd/upload';
 
 @Component({
@@ -17,10 +18,15 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   styleUrls: ['./studinfo.component.scss']
 })
 export class StudinfoComponent implements OnInit {
-  students: studentList[];
+  students: [studentList[]];
+  students$:Observable<studentList[]>;
+  result$:Observable<Result<studentList[]>>;
   oriStudents: studentList[];
-  searchTerm: string = '';
   studentId:string='';
+  sortField: string | null;
+  sortOrder: string | null;
+  searchTerm:string | null;
+  filter: Array<{ key: string; value: string }>
   loading = true;
   total=1;
   pageIndex = 1;
@@ -64,7 +70,7 @@ export class StudinfoComponent implements OnInit {
       this.students = res['data'];
     });
   }
-
+  
   onQueryParamsChange(params: NzTableQueryParams): void {
     console.log(params);
     const { pageSize, pageIndex, sort, filter } = params;
@@ -74,17 +80,36 @@ export class StudinfoComponent implements OnInit {
     const searchTerm=this.searchTerm ||null;
     this.pageIndex=pageIndex;
     this.pageSize=pageSize;
+    this.sortField=sortField;
+    this.sortOrder=sortOrder;
+    this.searchTerm=searchTerm;
+    this.filter=filter;
     this.loadDataFromServer(pageIndex, pageSize, sortField, sortOrder,searchTerm, filter);
   }
 
   ngOnInit(): void {
-   this.loadDataFromServer(this.pageIndex, this.pageSize, null, null,null, []);
+    this.loadDataFromServer(this.pageIndex, this.pageSize, null, null,null, []);
+    this.result$=this.searchTerm$.pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        switchMap(searchTerm =>
+        this.sharedService.getStudent(this.pageIndex,this.pageSize,this.sortField,this.sortOrder,searchTerm,this.filter)
+        ),
+    );
+    this.result$.subscribe(res=>{
+      this.loading=false;
+      this.students=res.data;
+      this.total=res.count
+      console.log(this.total)})
   }
+  private searchTerm$ = new Subject<string|null>();
   onSend(searchTerm: string){
+    this.searchTerm$.next(searchTerm);
+    console.log(this.searchTerm$)
     this.searchTerm=searchTerm;
     this.pageIndex=1;
     console.log(searchTerm)
-    this.loadDataFromServer(this.pageIndex, this.pageSize, null, null,this.searchTerm, []);
+    // this.loadDataFromServer(this.pageIndex, this.pageSize, null, null,this.searchTerm, []);
   }
 
   deleteStud(dataItem:studentList){
@@ -182,7 +207,8 @@ export class StudinfoComponent implements OnInit {
         this.getBase64(info.file!.originFileObj!, (img: string) => {
           this.loading = false;
           this.avatarUrl = img;
-          console.log(img)
+          console.log(img);
+          this.loadDataFromServer(this.pageIndex, this.pageSize, null, null,this.searchTerm, []);
         });
         break;
       case 'error':

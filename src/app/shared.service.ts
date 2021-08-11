@@ -14,8 +14,29 @@ export class SharedService {
 readonly apiUrl="http://127.0.0.1:8000"
 
   constructor(private http:HttpClient) { }
-  getStudent():Observable<Result<studentList>>{
-    return this.http.get<Result<studentList>>(this.apiUrl+'/stud/');
+  getStudent(
+    pageIndex: number,
+    pageSize: number,
+    sortField: string | null,
+    sortOrder: string | null,
+    searchTerm:string | null,
+    filters: Array<{ key: string; value: string }>
+  ): Observable<Result<studentList[]>> {
+    let params = new HttpParams()
+      .append('page', `${pageIndex}`)
+      .append('results', `${pageSize}`)
+      .append('sortField', `${sortField}`)
+      .append('sortOrder', `${sortOrder}`)
+      .append('searchTerm',`${searchTerm}`);
+    filters.forEach(filter => {
+      if(filter.value){
+      
+        params = params.append(filter.key, filter.value);
+      }}
+    )
+    return this.http
+      .get<Result<studentList[]>>(`${this.apiUrl+/stud/}`, { params })
+      .pipe(catchError(() => of(null)));
   }
   addStudent(val:any):Observable<Result<studentList>>{
     return this.http.post<Result<studentList>>(this.apiUrl+'/stud/',val);
@@ -36,7 +57,7 @@ readonly apiUrl="http://127.0.0.1:8000"
     sortOrder: string | null,
     searchTerm:string | null,
     filters: Array<{ key: string; value: string }>
-  ): Observable<{result:Result<studentList>[]}> {
+  ): Observable<{result:Result<studentList[]>}> {
     let params = new HttpParams()
       .append('page', `${pageIndex}`)
       .append('results', `${pageSize}`)
@@ -50,8 +71,8 @@ readonly apiUrl="http://127.0.0.1:8000"
       }}
     )
     return this.http
-      .get<{result:Result<studentList[]>[]}>(`${this.apiUrl+/stud/}`, { params })
-      .pipe(catchError(() => of({result: []})));
+      .get<{result:Result<studentList[]>}>(`${this.apiUrl+/stud/}`, { params })
+      .pipe(catchError(() => of({result: null})));
   }
   checkStudId(studentId:any):Observable<checkres>{
     return this.http

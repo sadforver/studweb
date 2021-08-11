@@ -43,10 +43,10 @@ export class TestpageComponent implements OnInit {
   
 
   ngOnInit(): void {
-    this.studentListService.getStudents().subscribe((result) => {
-            this.oriStudents = result.data;
-            this.listOfStudents = result.data;
-          });
+    // this.studentListService.getStudents().subscribe((result) => {
+    //         this.oriStudents = result.data;
+    //         this.listOfStudents = result.data;
+    //       });
   }
   searchInfo(){
     this.listOfStudents =this.oriStudents.filter((stud:studentList)=>{
