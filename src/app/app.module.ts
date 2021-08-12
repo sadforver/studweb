@@ -22,7 +22,7 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { SexReformPipe } from './sex-reform.pipe';
 import { ScholarReformPipe } from './scholar-reform.pipe';
 import { NzFormModule } from 'ng-zorro-antd/form';
-import { FormsModule,ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TestpageComponent } from './testpage/testpage.component';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { AddstudentComponent } from './studinfo/addstudent/addstudent.component';
@@ -32,18 +32,15 @@ import { ScholarPipe } from './studinfo/scholar.pipe';
 import { FuzzySearchComponent } from './child/fuzzy-search/fuzzy-search.component';
 import { NzMessageModule } from 'ng-zorro-antd/message';
 
-
 registerLocaleData(zh);
 
 @NgModule({
   declarations: [
     AppComponent,
     StudinfoComponent,
-
     SexReformPipe,
     ScholarReformPipe,
     TestpageComponent,
-    
     AddstudentComponent,
     GenderPipe,
     ScholarPipe,
@@ -69,10 +66,8 @@ registerLocaleData(zh);
     NzInputModule,
     NzUploadModule,
     NzMessageModule,
-
-    
   ],
   providers: [{ provide: NZ_I18N, useValue: zh_CN }],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,71 +1,121 @@
 <app-fuzzy-search (onSend)="onSend($event)"></app-fuzzy-search>
 <button nz-button nzType="primary" (click)="creatForm()">新增</button>
-<nz-table 
-    [nzData]="students" 
-    [nzLoading]="loading"
-    [nzFrontPagination]="false"
-    nzShowSizeChanger 
-    [nzScroll]="{ y: '650px' }"
-    [nzTotal]="total"
-    [nzPageSize]="pageSize"
-    [nzPageIndex]="pageIndex"
-    (nzQueryParams)="onQueryParamsChange($event)">
-    <thead>
-        <tr>
-            <th nzColumnKey="studentId" nzWidth="110px" [nzSortOrder]="idSortOrder" [nzSortFn]="true" [nzSortDirections]="idSortDirections">
-                学号
-            </th>
-            <th nzColumnKey="studentName" nzWidth="90px">学生姓名</th>
-            <th nzColumnKey="gender" nzWidth="70px"[nzFilterMultiple]="false" [nzFilters]="filterGender" [nzFilterFn]="true">
-                性别
-            </th>
-            <th nzColumnKey="schoolYear" nzWidth="100px"[nzSortOrder]="yearSortOrder" [nzSortFn]="true" [nzSortDirections]="yearSortDirections">
-                入学年份
-            </th>
-            <th nzColumnKey="telephone" nzWidth="120px">电话</th>
-            <th nzColumnKey="email" nzWidth="200px">邮箱</th>
-            <th nzColumnKey="studentType" nzWidth="70px" [nzFilterMultiple]="false" [nzFilters]="filterScholar" [nzFilterFn]="true">
-                学历
-            </th>
-            <th nzColumnKey="idNo" nzWidth="160px">身份证</th>
-            <th nzColumnKey="photo" nzWidth="100px">照片</th>
-            <th nzColumnKey="action"  nzWidth="120px">操作</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let dataItem of students">
-            <td nzWidth="180px">{{ dataItem.studentId }}</td>
-            <td>{{ dataItem.studentName }}</td>
-            <td>{{ dataItem.gender |gender}}</td>
-            <td>{{ dataItem.schoolYear  }}</td>
-            <td>{{ dataItem.telephone }}</td>
-            <td>{{ dataItem.email }}</td>
-            <td>
-                
-                {{ dataItem.studentType |scholar }}
-            </td>
-            <td nzWidth="240px" nzleft="false">{{ dataItem.idNo }}</td>
-            <td><nz-upload
-                class="avatar-uploader"
-                nzAction="http://127.0.0.1:8000/photo/"
-                nzName="avatar"
-                nzListType="picture-card"
-                [nzShowUploadList]="false"
-                [nzBeforeUpload]="beforeUpload"
-                (nzChange)="handleChange($event)"
-                [nzData]="phoBelong(dataItem)"
-              >
-                <ng-container *ngIf=!dataItem.avatarUrl>
-                  <i class="upload-icon" nz-icon [nzType]="loading ? 'loading' : 'plus'"></i>
-                  <div class="ant-upload-text">Upload</div>
-                </ng-container>
-                <img *ngIf=dataItem.avatarUrl [src]=dataItem.avatarUrl style="width: 100%" />
-              </nz-upload></td>
-            <td>
-                <button nz-button nzType="primary" nzGhost  nzShape="round" nzDanger (click)="deleteStud(dataItem)">删除</button>
-                <button nz-button nzType="primary" nzGhost  nzShape="round" (click)="updateForm(dataItem)">编辑</button>
-                            
-            </td>
-        </tr>
-    </tbody>
+<nz-table
+  [nzData]="students"
+  [nzLoading]="loading"
+  [nzFrontPagination]="false"
+  nzShowSizeChanger
+  [nzScroll]="{ y: '650px' }"
+  [nzTotal]="total"
+  [nzPageSize]="pageSize"
+  [nzPageIndex]="pageIndex"
+  (nzQueryParams)="onQueryParamsChange($event)"
+>
+  <thead>
+    <tr>
+      <th
+        nzColumnKey="studentId"
+        nzWidth="110px"
+        [nzSortOrder]="idSortOrder"
+        [nzSortFn]="true"
+        [nzSortDirections]="idSortDirections"
+      >
+        学号
+      </th>
+      <th nzColumnKey="studentName" nzWidth="90px">学生姓名</th>
+      <th
+        nzColumnKey="gender"
+        nzWidth="70px"
+        [nzFilterMultiple]="false"
+        [nzFilters]="filterGender"
+        [nzFilterFn]="true"
+      >
+        性别
+      </th>
+      <th
+        nzColumnKey="schoolYear"
+        nzWidth="100px"
+        [nzSortOrder]="yearSortOrder"
+        [nzSortFn]="true"
+        [nzSortDirections]="yearSortDirections"
+      >
+        入学年份
+      </th>
+      <th nzColumnKey="telephone" nzWidth="120px">电话</th>
+      <th nzColumnKey="email" nzWidth="200px">邮箱</th>
+      <th
+        nzColumnKey="studentType"
+        nzWidth="70px"
+        [nzFilterMultiple]="false"
+        [nzFilters]="filterScholar"
+        [nzFilterFn]="true"
+      >
+        学历
+      </th>
+      <th nzColumnKey="idNo" nzWidth="160px">身份证</th>
+      <th nzColumnKey="photo" nzWidth="100px">照片</th>
+      <th nzColumnKey="action" nzWidth="120px">操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let dataItem of students">
+      <td nzWidth="180px">{{ dataItem.studentId }}</td>
+      <td>{{ dataItem.studentName }}</td>
+      <td>{{ dataItem.gender | gender }}</td>
+      <td>{{ dataItem.schoolYear }}</td>
+      <td>{{ dataItem.telephone }}</td>
+      <td>{{ dataItem.email }}</td>
+      <td>
+        {{ dataItem.studentType | scholar }}
+      </td>
+      <td nzWidth="240px" nzleft="false">{{ dataItem.idNo }}</td>
+      <td>
+        <nz-upload
+          class="avatar-uploader"
+          nzAction="http://127.0.0.1:8000/photo/"
+          nzName="avatar"
+          nzListType="picture-card"
+          [nzShowUploadList]="false"
+          [nzBeforeUpload]="beforeUpload"
+          (nzChange)="handleChange($event)"
+          [nzData]="phoBelong(dataItem)"
+        >
+          <ng-container *ngIf="!dataItem.avatarUrl">
+            <i
+              class="upload-icon"
+              nz-icon
+              [nzType]="loading ? 'loading' : 'plus'"
+            ></i>
+            <div class="ant-upload-text">Upload</div>
+          </ng-container>
+          <img
+            *ngIf="dataItem.avatarUrl"
+            [src]="dataItem.avatarUrl"
+            style="width: 100%"
+          />
+        </nz-upload>
+      </td>
+      <td>
+        <button
+          nz-button
+          nzType="primary"
+          nzGhost
+          nzShape="round"
+          nzDanger
+          (click)="deleteStud(dataItem)"
+        >
+          删除
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          nzGhost
+          nzShape="round"
+          (click)="updateForm(dataItem)"
+        >
+          编辑
+        </button>
+      </td>
+    </tr>
+  </tbody>
 </nz-table>

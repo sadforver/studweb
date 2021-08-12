@@ -6,7 +6,7 @@ import { studentList } from './studinfo/student';
 import { Result } from './result';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StudentListService {
   studentListUrl = 'http://127.0.0.1:8000/user/';
@@ -17,31 +17,26 @@ export class StudentListService {
     sortField: string | null,
     sortOrder: string | null,
     filters: Array<{ key: string; value: string[] }>
-  ): Observable< Result<studentList[]> > {
+  ): Observable<Result<studentList[]>> {
     let params = new HttpParams()
       .append('page', `${pageIndex}`)
       .append('results', `${pageSize}`)
       .append('sortField', `${sortField}`)
       .append('sortOrder', `${sortOrder}`);
-    filters.forEach(filter => {
-      if(filter.value){
-      filter.value.forEach(value => {
-        params = params.append(filter.key, value);
-      });}
+    filters.forEach((filter) => {
+      if (filter.value) {
+        filter.value.forEach((value) => {
+          params = params.append(filter.key, value);
+        });
+      }
     });
-    return this.http
-      .get<Result<studentList[]> >(`${this.studentListUrl}`, { params })
-     
+    return this.http.get<Result<studentList[]>>(`${this.studentListUrl}`, {
+      params,
+    });
   }
 
-
-
-
-
-
-  getStudents( ): Observable<Result<studentList[]>> {
+  getStudents(): Observable<Result<studentList[]>> {
     return this.http.get<Result<studentList[]>>(this.studentListUrl);
-     
   }
   constructor(private http: HttpClient) {}
 }
