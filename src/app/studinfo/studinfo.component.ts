@@ -20,6 +20,7 @@ export class StudinfoComponent implements OnInit {
   students: [studentList[]];
   students$: Observable<studentList[]>;
   result$: Observable<Result<studentList[]>>;
+  private searchTerm$ = new Subject<string | null>();
   oriStudents: studentList[];
   studentId: string = '';
   sortField: string | null;
@@ -63,18 +64,19 @@ export class StudinfoComponent implements OnInit {
   ): void {
     this.loading = true;
     this.sharedService
-      .getStudents(
-        pageIndex,
-        pageSize,
-        sortField,
-        sortOrder,
-        searchTerm,
-        filter
-      )
-      .subscribe((res) => {
-        this.loading = false;
-        this.total = res['count'];
-        this.students = res['data'];
+      .getStudent(pageIndex, pageSize, sortField, sortOrder, searchTerm, filter)
+      .subscribe({
+        next: (res) => {
+          this.loading = false;
+          this.total = res.count;
+          this.students = res.data;
+        },
+        error: (error) => {
+          console.error(error);
+        },
+        complete: () => {
+          console.log('complete');
+        },
       });
   }
 
@@ -124,14 +126,21 @@ export class StudinfoComponent implements OnInit {
         )
       )
     );
-    this.result$.subscribe((res) => {
-      this.loading = false;
-      this.students = res.data;
-      this.total = res.count;
-      console.log(this.total);
+    this.result$.subscribe({
+      next: (res) => {
+        this.loading = false;
+        this.total = res.count;
+        this.students = res.data;
+      },
+      error: (error) => {
+        console.error(error);
+      },
+      complete: () => {
+        console.log('complete');
+      },
     });
   }
-  private searchTerm$ = new Subject<string | null>();
+
   onSend(searchTerm: string) {
     this.searchTerm$.next(searchTerm);
     console.log(this.searchTerm$);
@@ -219,11 +228,7 @@ export class StudinfoComponent implements OnInit {
     });
   }
 
-  beforeUpload = (
-    file: NzUploadFile,
-    _fileList: NzUploadFile[],
-    studentId: string
-  ) =>
+  beforeUpload = (file: NzUploadFile, _fileList: NzUploadFile[]) =>
     new Observable((observer: Observer<boolean>) => {
       const isJpgOrPng =
         file.type === 'image/jpeg' || file.type === 'image/png';

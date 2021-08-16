@@ -58,6 +58,12 @@
       <input nz-input formControlName="idNo" placeholder="请输入身份证号" />
     </nz-form-control>
   </nz-form-item>
+  <nz-form-item *ngIf="false">
+    <nz-form-label [nzSpan]="7" nzRequired>头像</nz-form-label>
+    <nz-form-control [nzSpan]="12">
+      <input nz-input formControlName="avatarUrl" placeholder="" />
+    </nz-form-control>
+  </nz-form-item>
 </form>
 <div *nzModalFooter>
   <button nz-button nzType="default" (click)="close()">取消</button>

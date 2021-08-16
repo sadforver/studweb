@@ -5,6 +5,9 @@ import { MyValidators } from './type';
 import { SharedService } from 'src/app/shared.service';
 import { studentList } from '../student';
 import { ValidateStudentExist } from 'src/app/validators/asyncStudentId.validator';
+import { Observable, Subject } from 'rxjs';
+import { Result } from 'src/app/result';
+import { debounceTime, distinctUntilChanged, exhaustMap } from 'rxjs/operators';
 @Component({
   selector: 'app-addstudent',
   templateUrl: './addstudent.component.html',
@@ -21,6 +24,10 @@ export class AddstudentComponent implements OnInit {
   gender = 'F';
   studentType = 'M';
   valid: boolean;
+  private submitForm$ = new Subject<studentList>();
+  private updateForm$ = new Subject<studentList>();
+  result$: Observable<Result<studentList>>;
+
   addsubmit(value: {
     studentId: string;
     studentName: string;
@@ -44,10 +51,7 @@ export class AddstudentComponent implements OnInit {
       console.log(this.validateForm.valid);
       if (this.validateForm.valid) {
         this.showLoading = false;
-        this.sharedService.addStudent(value).subscribe((res) => {
-          alert(res.message.toString());
-        });
-        this.modalRef.destroy('suc');
+        this.submitForm$.next(value);
       } else {
         this.showLoading = false;
       }
@@ -74,10 +78,7 @@ export class AddstudentComponent implements OnInit {
     setTimeout(() => {
       if (this.validateForm.valid) {
         this.showLoading = false;
-        this.sharedService.updateStudent(value).subscribe((res) => {
-          alert(res.message.toString());
-        });
-        this.modalRef.destroy('suc');
+        this.updateForm$.next(value);
       } else {
         this.showLoading = false;
       }
@@ -120,6 +121,7 @@ export class AddstudentComponent implements OnInit {
       email: ['', [required, email]],
       studentType: ['M', [required]],
       idNo: ['', [required, maxLength(18), minLength(18), idNo]],
+      avatarUrl: ['', []],
     });
   }
   ngOnInit(): void {
@@ -132,5 +134,28 @@ export class AddstudentComponent implements OnInit {
       this.update = true;
       this.validateForm.controls['studentId'].clearAsyncValidators();
     }
+    console.log(this.method);
+    this.result$ = this.submitForm$.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      exhaustMap((value) => this.sharedService.addStudent(value))
+    );
+    this.result$ = this.updateForm$.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      exhaustMap((value) => this.sharedService.updateStudent(value))
+    );
+    this.result$.subscribe({
+      next: (res) => {
+        alert(res.message.toString());
+        this.modalRef.destroy('suc');
+      },
+      error: (error) => {
+        console.error(error);
+      },
+      complete: () => {
+        console.log('complete');
+      },
+    });
   }
 }
