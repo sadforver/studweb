@@ -1,6 +1,13 @@
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 import { Observable } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+} from 'rxjs/operators';
 import { SharedService } from '../shared.service';
+
 export class ValidateStudentExist {
   static createValidator(sharedService: SharedService) {
     return (
@@ -8,25 +15,26 @@ export class ValidateStudentExist {
     ):
       | Promise<ValidationErrors | null>
       | Observable<ValidationErrors | null> => {
-      const value = control.value;
       return new Promise((pass) => {
-        setTimeout(() => {
-          sharedService.checkStudId(value).subscribe((res) => {
-            console.log(res);
-            if (res.count) {
-              console.log(res.count);
-              pass({
-                studentId: {
-                  'zh-cn': `该学号已存在`,
-                  en: `Student Id has already existed`,
-                },
-              });
-              console.log(pass);
-            } else {
-              pass(null);
-            }
-          });
-        }, 300);
+        const count = control.valueChanges.pipe(
+          debounceTime(200),
+          distinctUntilChanged(),
+          switchMap((value) => sharedService.checkStudId(value)),
+          map(({ count }) => count)
+        );
+        count.subscribe((count) => {
+          if (count) {
+            console.log(count);
+            pass({
+              studentId: {
+                'zh-cn': `该学号已存在`,
+                en: `Student Id has already existed`,
+              },
+            });
+          } else {
+            pass(null);
+          }
+        });
       });
     };
   }

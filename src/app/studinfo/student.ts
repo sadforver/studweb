@@ -7,4 +7,5 @@ export interface studentList {
   email: string;
   studentType: string;
   idNo: string;
+  avatarUrl: string;
 }

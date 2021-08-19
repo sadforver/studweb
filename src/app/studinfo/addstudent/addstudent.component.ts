@@ -26,21 +26,10 @@ export class AddstudentComponent implements OnInit {
   valid: boolean;
   private submitForm$ = new Subject<studentList>();
   private updateForm$ = new Subject<studentList>();
-  result$: Observable<Result<studentList>>;
-
-  addsubmit(value: {
-    studentId: string;
-    studentName: string;
-    gender: string;
-    schoolYear: Date;
-    telephone: string;
-    email: string;
-    studentType: string;
-    idNo: string;
-  }) {
+  submitresult$: Observable<Result<studentList>>;
+  updateresult$: Observable<Result<studentList>>;
+  addsubmit(value: studentList) {
     this.showLoading = true;
-    this.a = 0;
-
     for (const key in this.validateForm.controls) {
       if (this.validateForm.controls.hasOwnProperty(key)) {
         this.validateForm.controls[key].markAsDirty();
@@ -57,18 +46,8 @@ export class AddstudentComponent implements OnInit {
       }
     }, 1000);
   }
-  updatesubmit(value: {
-    studentId: string;
-    studentName: string;
-    gender: string;
-    schoolYear: Date;
-    telephone: string;
-    email: string;
-    studentType: string;
-    idNo: string;
-  }) {
+  updatesubmit(value: studentList) {
     this.showLoading = true;
-    this.a = 0;
     for (const key in this.validateForm.controls) {
       if (this.validateForm.controls.hasOwnProperty(key)) {
         this.validateForm.controls[key].markAsDirty();
@@ -126,6 +105,7 @@ export class AddstudentComponent implements OnInit {
   }
   ngOnInit(): void {
     this.validateForm.setValue(this.dataItem);
+    console.log(this.method);
     if (this.method == 'add') {
       this.add = true;
       this.update = false;
@@ -134,18 +114,27 @@ export class AddstudentComponent implements OnInit {
       this.update = true;
       this.validateForm.controls['studentId'].clearAsyncValidators();
     }
-    console.log(this.method);
-    this.result$ = this.submitForm$.pipe(
-      debounceTime(500),
-      distinctUntilChanged(),
+
+    this.submitresult$ = this.submitForm$.pipe(
       exhaustMap((value) => this.sharedService.addStudent(value))
     );
-    this.result$ = this.updateForm$.pipe(
-      debounceTime(500),
-      distinctUntilChanged(),
+
+    this.submitresult$.subscribe({
+      next: (res) => {
+        alert(res.message.toString());
+        this.modalRef.destroy('suc');
+      },
+      error: (error) => {
+        console.error(error);
+      },
+      complete: () => {
+        console.log('complete');
+      },
+    });
+    this.updateresult$ = this.updateForm$.pipe(
       exhaustMap((value) => this.sharedService.updateStudent(value))
     );
-    this.result$.subscribe({
+    this.updateresult$.subscribe({
       next: (res) => {
         alert(res.message.toString());
         this.modalRef.destroy('suc');

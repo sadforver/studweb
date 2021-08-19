@@ -179,6 +179,7 @@ export class StudinfoComponent implements OnInit {
           email: '',
           studentType: 'M',
           idNo: '',
+          avatarUrl: '',
         },
         method: 'add',
       },
