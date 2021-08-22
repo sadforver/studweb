@@ -2,12 +2,7 @@
   <nz-form-item>
     <nz-form-label [nzSpan]="7" nzRequired>学号</nz-form-label>
     <nz-form-control [nzSpan]="12" nzValidatingTip="Validating...">
-      <input
-        nz-input
-        formControlName="studentId"
-        placeholder="请输入学号"
-        [readonly]="update"
-      />
+      <input nz-input formControlName="studentId" placeholder="请输入学号" [readonly]="update" />
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
@@ -28,7 +23,7 @@
   <nz-form-item>
     <nz-form-label [nzSpan]="7" nzRequired>入学年份</nz-form-label>
     <nz-form-control [nzSm]="16" [nzXs]="24">
-      <nz-date-picker formControlName="schoolYear"></nz-date-picker>
+      <nz-date-picker formControlName="schoolYear" nzFormat="yyyy-MM-dd"></nz-date-picker>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
@@ -67,22 +62,11 @@
 </form>
 <div *nzModalFooter>
   <button nz-button nzType="default" (click)="close()">取消</button>
-  <button
-    nz-button
-    nzType="primary"
-    (click)="addsubmit(validateForm.value)"
-    [nzLoading]="isConfirmLoading"
-    *ngIf="add"
-  >
+  <button nz-button nzType="primary" (click)="addsubmit(validateForm.value)" [nzLoading]="isConfirmLoading" *ngIf="add">
     提交
   </button>
-  <button
-    nz-button
-    nzType="primary"
-    (click)="updatesubmit(validateForm.value)"
-    [nzLoading]="isConfirmLoading"
-    *ngIf="update"
-  >
+  <button nz-button nzType="primary" (click)="updatesubmit(validateForm.value)" [nzLoading]="isConfirmLoading"
+    *ngIf="update">
     编辑
   </button>
 </div>

@@ -44,7 +44,7 @@ export class AddstudentComponent implements OnInit {
       } else {
         this.showLoading = false;
       }
-    }, 1000);
+    }, 2000);
   }
   updatesubmit(value: studentList) {
     this.showLoading = true;
@@ -61,7 +61,7 @@ export class AddstudentComponent implements OnInit {
       } else {
         this.showLoading = false;
       }
-    }, 1000);
+    }, 2000);
   }
 
   autoTips: Record<string, Record<string, string>> = {
